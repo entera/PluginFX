@@ -1,0 +1,65 @@
+//-------------------------------------------------------------------------------------------------
+// ROOT PROJECT.
+//-------------------------------------------------------------------------------------------------
+
+project(":") { project ->
+    // provide assemble and clean tasks.
+    apply plugin: "base"
+
+    // task to add gradle wrapper files.
+    task wrapper(type: Wrapper, group: "build setup") {
+        gradleVersion = "2.4"
+    }
+
+    // task to print gradle and groovy versions.
+    task versions(group: "help") << {
+        println "Java version: ${System.getProperty("java.version")}"
+        println "Gradle version: ${project.gradle.gradleVersion}"
+        println "Groovy version: ${GroovySystem.version}"
+    }
+}
+
+//-------------------------------------------------------------------------------------------------
+// ALL PROJECTS.
+//-------------------------------------------------------------------------------------------------
+
+allprojects { project ->
+    // task to create main and test source directories.
+    task sourceDirs(group: "build setup") << {
+        if (project != rootProject) {
+            sourceSets*.allSource.srcDirs*.each { it.mkdirs() }
+            sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------------------
+// ALL SUBPROJECTS.
+//-------------------------------------------------------------------------------------------------
+
+subprojects { project ->
+    // provide java configurations and tasks.
+    apply plugin: "java"
+
+    // maven repositories for dependencies.
+    repositories {
+        if (project.hasProperty("useMavenLocal")) {
+            mavenLocal()
+        }
+    }
+
+    dependencies {
+        // dependency to javafx 8.
+        def javaRuntimeDir = new File(System.properties["java.home"] as String)
+        compile files("${javaRuntimeDir}/lib/ext/jfxrt.jar")
+    }
+
+    // source code compatible to java 8.
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    // configure javadoc task for java 8.
+    javadoc {
+        options.addStringOption("Xdoclint:none", "-quiet")
+    }
+}
