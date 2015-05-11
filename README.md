@@ -1,6 +1,14 @@
-# WorkbenchFX [![Travis CI](https://img.shields.io/travis/entera/WorkbenchFX/master.svg?label=travis&style=flat-square)](https://travis-ci.org/entera/WorkbenchFX)
+# WorkbenchFX
 
-Workbench control element for JavaFX &mdash; https://github.com/entera/WorkbenchFX
+[![](https://img.shields.io/travis/entera/WorkbenchFX/master.svg?label=travis)][Travis CI]
+[![](https://img.shields.io/maven-central/v/de.entera/workbenchfx.svg?label=bintray)][Bintray JCenter]
+[![](https://img.shields.io/maven-central/v/de.entera/workbenchfx.svg?label=maven)][Maven Central]
+
+[Travis CI]: https://travis-ci.org/entera/WorkbenchFX "Travis CI"
+[Bintray JCenter]: https://bintray.com/entera/workbenchfx "Bintray JCenter"
+[Maven Central]: https://search.maven.org/#search|ga|1|de.entera "Maven Central"
+
+A workbench user interface for JavaFX. &mdash; https://github.com/entera/WorkbenchFX
 
 
 ## Status
@@ -15,7 +23,25 @@ _TBD._
 
 ## Usage
 
-_TBD._
+~~~groovy
+@GrabResolver("https://jcenter.bintray.com/")
+@Grab("org.codehaus.groovyfx:groovyfx:0.4.0")
+@Grab("de.entera:workbenchfx:0.1.0")
+
+import groovyx.javafx.GroovyFX
+import de.entera.workbenchfx.Workbench
+
+GroovyFX.start {
+    stage(title: this.class.simpleName, visible: true) {
+        scene(width: 640, height: 480) {
+            def workbench = new Workbench()
+            workbench.content = stackPane(label("content"))
+            workbench.leftViews << label("left first") << label("left second")
+            stackPane(workbench)
+        }
+    }
+}
+~~~
 
 
 ## Motivation
