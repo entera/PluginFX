@@ -7,6 +7,7 @@ import javafx.collections.ObservableList
 import javafx.scene.Node
 import javafx.scene.control.Control
 import javafx.scene.control.Skin
+import javafx.scene.control.ToggleButton
 
 import de.entera.workbenchfx.impl.WorkbenchSkin
 
@@ -32,6 +33,10 @@ class Workbench extends Control {
 
     final ObservableList<Node> getRightViews() { return this.rightViews }
 
+    final ObservableList<ToggleButton> getLeftButtons() { return this.leftButtons }
+
+    final ObservableList<ToggleButton> getRightButtons() { return this.rightButtons }
+
     //---------------------------------------------------------------------------------------------
     // PRIVATE FIELDS.
     //---------------------------------------------------------------------------------------------
@@ -41,6 +46,10 @@ class Workbench extends Control {
     private final ObservableList<Node> leftViews = FXCollections.observableArrayList()
 
     private final ObservableList<Node> rightViews = FXCollections.observableArrayList()
+
+    private final ObservableList<ToggleButton> leftButtons = FXCollections.observableArrayList()
+
+    private final ObservableList<ToggleButton> rightButtons = FXCollections.observableArrayList()
 
     //---------------------------------------------------------------------------------------------
     // CONSTRUCTORS.

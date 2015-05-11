@@ -2,6 +2,7 @@ package de.entera.workbenchfx
 
 import javafx.scene.Scene
 import javafx.scene.control.Label
+import javafx.scene.control.ToggleButton
 import javafx.stage.Stage
 
 import org.junit.Test
@@ -49,7 +50,7 @@ class WorkbenchTest extends ApplicationTest {
         }
 
         // then:
-        verifyThat(".workbench .content-container", hasChild("content"))
+        verifyThat(".workbench .content.container", hasChild("content"))
     }
 
     @Test
@@ -60,8 +61,8 @@ class WorkbenchTest extends ApplicationTest {
         }
 
         // then:
-        verifyThat(".workbench .left-container", hasChild("left one"))
-        verifyThat(".workbench .left-container", hasChild("left two"))
+        verifyThat(".workbench .left.container", hasChild("left one"))
+        verifyThat(".workbench .left.container", hasChild("left two"))
     }
 
     @Test
@@ -72,8 +73,30 @@ class WorkbenchTest extends ApplicationTest {
         }
 
         // then:
-        verifyThat(".workbench .right-container", hasChild("right one"))
-        verifyThat(".workbench .right-container", hasChild("right two"))
+        verifyThat(".workbench .right.container", hasChild("right one"))
+        verifyThat(".workbench .right.container", hasChild("right two"))
+    }
+
+    @Test
+    void "should update left buttons"() {
+        // when:
+        interact {
+            workbench.leftButtons << new ToggleButton("left first button")
+        }
+
+        // then:
+        verifyThat(".workbench .left.tool-bar", hasChild("left first button"))
+    }
+
+    @Test
+    void "should update right buttons"() {
+        // when:
+        interact {
+            workbench.rightButtons << new ToggleButton("right first button")
+        }
+
+        // then:
+        verifyThat(".workbench .right.tool-bar", hasChild("right first button"))
     }
 
 }
