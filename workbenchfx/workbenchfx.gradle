@@ -1,17 +1,19 @@
-apply plugin: "groovy"
-
 repositories {
     jcenter()
 }
 
+// main source dependencies.
 dependencies {
     // groovy compiler and library.
     compile "org.codehaus.groovy:groovy-all:2.4.3"
 
-    // google core libraries and dependency injector.
-    compile "com.google.guava:guava:18.0"
-    compile "com.google.inject:guice:4.0"
+//    // google core libraries and dependency injector.
+//    compile "com.google.guava:guava:18.0"
+//    compile "com.google.inject:guice:4.0"
+}
 
+// test source dependencies.
+dependencies {
     // junit and spock test framework, hamcrest assertions and mocking.
     testCompile module("org.spockframework:spock-core:1.0-groovy-2.4") {
         dependency "junit:junit:4.12"
