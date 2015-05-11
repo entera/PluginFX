@@ -1,6 +1,23 @@
 //-------------------------------------------------------------------------------------------------
+// GRADLE PLUGINS.
+//-------------------------------------------------------------------------------------------------
+
+plugins {
+    // use the bintray gradle plugin to upload build artifacts.
+    id "com.jfrog.bintray" version "1.2"
+}
+
+//-------------------------------------------------------------------------------------------------
 // ROOT PROJECT.
 //-------------------------------------------------------------------------------------------------
+
+// only our subprojects have a bintray configuration. replace the root project's `bintrayUpload`
+// task with one that restricts the calls to the subprojects.
+project.afterEvaluate {
+    task bintrayUpload(group: "publishing", overwrite: true) {
+        dependsOn subprojects.bintrayUpload
+    }
+}
 
 project(":") { project ->
     // provide assemble and clean tasks.
@@ -8,7 +25,7 @@ project(":") { project ->
 
     // task to add gradle wrapper files.
     task wrapper(type: Wrapper, group: "build setup") {
-        gradleVersion = "2.4"
+        gradleVersion = project.gradleVersion
     }
 
     // task to print gradle and groovy versions.
@@ -16,6 +33,18 @@ project(":") { project ->
         println "Java version: ${System.getProperty("java.version")}"
         println "Gradle version: ${project.gradle.gradleVersion}"
         println "Groovy version: ${GroovySystem.version}"
+    }
+
+    ext {
+        // add build time and date to project attributes.
+        def buildTimeAndDate = new Date()
+        buildDate = buildTimeAndDate.format("yyyy-MM-dd")
+        buildTime = buildTimeAndDate.format("HH:mm:ss.SSSZ")
+
+        // add java version and vendor to project attributes.
+        javaVersion = System.properties["java.version"]
+        javaVendor = System.properties["java.vendor"]
+        javaVmVersion = System.properties["java.vm.version"]
     }
 }
 
@@ -38,8 +67,9 @@ allprojects { project ->
 //-------------------------------------------------------------------------------------------------
 
 subprojects { project ->
-    // provide java configurations and tasks.
+    // provide java and groovy configurations and tasks.
     apply plugin: "java"
+    apply plugin: "groovy"
 
     // maven repositories for dependencies.
     repositories {
@@ -49,7 +79,7 @@ subprojects { project ->
     }
 
     dependencies {
-        // dependency to javafx 8.
+        // include dependencies to javafx 8.
         def javaRuntimeDir = new File(System.properties["java.home"] as String)
         compile files("${javaRuntimeDir}/lib/ext/jfxrt.jar")
     }
@@ -57,6 +87,52 @@ subprojects { project ->
     // source code compatible to java 8.
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
+
+    // configure publish tasks.
+    apply from: rootProject.file("gradle/publish.gradle")
+
+    // task to create jar with source code.
+    task sourceJar(type: Jar) {
+        group "Build"
+        description "An archive of the source code"
+        classifier "sources"
+        //from sourceSets.main.allJava
+        from sourceSets.main.allGroovy
+    }
+
+    // task to create jar with javadocs.
+    task javadocJar(type: Jar) {
+        group "Build"
+        description "An archive of the javadoc"
+        classifier "javadoc"
+        //from javadoc
+        from groovydoc
+    }
+
+    jar.finalizedBy sourceJar
+    jar.finalizedBy javadocJar
+
+    artifacts {
+        archives jar
+        archives sourceJar
+        archives javadocJar
+    }
+
+    // configure jar task to include manifest attributes.
+    jar {
+        manifest.attributes(
+            "Created-By": project.javaVersion +
+                " (" + project.javaVendor + " " + project.javaVmVersion + ")",
+            "Build-Date": project.buildDate,
+            "Build-Time": project.buildTime,
+            "Specification-Title": project.name,
+            "Specification-Version": project.version,
+            "Specification-Vendor": project.vendor,
+            "Implementation-Title": project.name,
+            "Implementation-Version": project.version,
+            "Implementation-Vendor": project.vendor
+        )
+    }
 
     // configure javadoc task for java 8.
     javadoc {

@@ -1,6 +1,3 @@
-// name of root project.
-rootProject.name = "WorkbenchFX"
-
 // list of subprojects.
 include "workbenchfx"
 
